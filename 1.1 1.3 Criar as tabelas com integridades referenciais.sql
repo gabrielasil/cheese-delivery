@@ -7,7 +7,7 @@ CREATE TABLE "store" (
   "address" varchar NOT NULL,
   "city" varchar NOT NULL,
   "state" varchar NOT NULL,
-  "coordinates" "geography(point, 4326)" NOT NULL,
+  "coordinates" geography(POINT,4326) NOT NULL,
   "description" varchar,
   "delivery_range" numeric NOT NULL
 );
@@ -19,6 +19,7 @@ CREATE TABLE "cheese" (
   "deleted_at" timestamp,
   "name" varchar NOT NULL,
   "quantity" numeric NOT NULL,
+  "price" numeric NOT NULL,
   "description" varchar,
   "store_id" uuid NOT NULL
 );
@@ -37,8 +38,9 @@ CREATE TABLE "order" (
   "created_at" timestamp NOT NULL,
   "delivered_at" timestamp,
   "store_id" uuid NOT NULL,
-  "customer_id" uuid NOT NULL,
+  "customer_address_id" uuid NOT NULL,
   "customer_payment_form_id" uuid NOT NULL,
+  "total_value" numeric NOT NULL,
   "observations" varchar
 );
 
@@ -59,7 +61,7 @@ CREATE TABLE "customer_address" (
   "address" varchar NOT NULL,
   "city" varchar NOT NULL,
   "state" varchar NOT NULL,
-  "coordinates" "geography(point, 4326)" NOT NULL,
+  "coordinates" geography(POINT,4326) NOT NULL,
   "customer_id" uuid NOT NULL
 );
 
@@ -68,6 +70,14 @@ CREATE TABLE "customer_payment_form" (
   "created_at" timestamp NOT NULL,
   "customer_id" uuid NOT NULL,
   "payment_form_id" uuid NOT NULL
+);
+
+CREATE TABLE "customer_points" (
+  "id" uuid PRIMARY KEY NOT NULL,
+  "created_at" timestamp NOT NULL,
+  "customer_id" uuid NOT NULL,
+  "order_id" uuid NOT NULL,
+  "points" numeric NOT NULL
 );
 
 CREATE TABLE "payment_form_catalog" (
@@ -91,7 +101,7 @@ ALTER TABLE "order_items" ADD FOREIGN KEY ("order_id") REFERENCES "order" ("id")
 
 ALTER TABLE "order" ADD FOREIGN KEY ("store_id") REFERENCES "store" ("id");
 
-ALTER TABLE "order" ADD FOREIGN KEY ("customer_id") REFERENCES "customer" ("id");
+ALTER TABLE "order" ADD FOREIGN KEY ("customer_address_id") REFERENCES "customer_address" ("id");
 
 ALTER TABLE "order" ADD FOREIGN KEY ("customer_payment_form_id") REFERENCES "customer_payment_form" ("id");
 
